@@ -2,12 +2,12 @@
 
 CXX=g++
 CXXFLAGS=-g3
-INCLUDES=-I .
+INCLUDES=-I . -I /usr/local/include 
 
 
 INSTALL_INC_PATH=/usr/include/mosman
 INSTALL_LIB_PATH=/usr/lib
-LIBS=-L . -l mframework -lpqxx -lpq -lboost_regex
+LIBS=-L . -L /usr/local/lib -l mframework -lpqxx -lpq -lboost_regex
 
 TARGET=libmframework.a teste vtx-spool
 OBJLIB=aplicativo.o config.o rede.o
