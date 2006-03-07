@@ -66,6 +66,9 @@ Rede::Rede(const string &rede) {
     /////////////////
     this->addr = inet_addr(strRede.c_str());
 
+    // Coloca o iterador no começo
+    this->it = this->network() + (1<<24);
+
 }
 
 in_addr_t Rede::network() {
@@ -117,4 +120,15 @@ string Rede::obtemUltimoIP() {
 	return(this->formata(ultimoIP));
 }
 
+string Rede::obtemProximoIP(){
+	if( this->it == this->broadcast() ) return "";
+
+	// incrementa
+	struct in_addr tmp = inet_makeaddr(this->it,0);
+	tmp.s_addr++;
+	tmp = inet_makeaddr(tmp.s_addr,0);
+	this->it = tmp.s_addr;
+	if( this->it == this->broadcast() ) return "";
+	return(formata(this->it));
+}
 

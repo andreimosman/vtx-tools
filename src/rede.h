@@ -20,6 +20,8 @@ namespace MOSMAN {
 	   in_addr_t wildcard;		// Wildcard
 	   in_addr_t netmask;		// Netmask
 
+	   in_addr_t it;			// usado no pseudo-iterator de todos os endereços da classe
+
 	  //int obtemWildcard();
 
 	  in_addr_t msb2lsb(in_addr_t val);
@@ -40,6 +42,7 @@ namespace MOSMAN {
          string obtemEnderecoBroadcast();
          string obtemPrimeiroIP();
          string obtemUltimoIP();
+         string obtemProximoIP();
 
 
 

@@ -5,11 +5,15 @@
 
 #include <atuador.h>
 
+#include <config.h>
 
 class AtuadorBandalarga : public Atuador {
+	protected:
+		Config cfg;
+
 
    public:
-      AtuadorBandalarga();
+      AtuadorBandalarga(Config& cfg);
       int processa(const string&,const string&,const string&);
 
 

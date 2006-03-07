@@ -10,7 +10,7 @@ INSTALL_LIB_PATH=/usr/lib
 LIBS=-L . -L /usr/local/lib -l mframework -lpqxx -lpq -lboost_regex
 
 TARGET=libmframework.a teste vtx-spool
-OBJLIB=aplicativo.o config.o rede.o
+OBJLIB=aplicativo.o config.o rede.o so_freebsd.o sistema_operacional.o
 OBJETOS=appteste.o appspool.o atuador_bandalarga.o atuador.o
 
 

@@ -13,6 +13,9 @@ class AplicativoSpool : public Aplicativo {
 
    protected:
       connection *conn;
+      bool doBoot;
+      bool doFork;
+      bool quiet;
 
    public:
       AplicativoSpool::AplicativoSpool();
@@ -20,6 +23,11 @@ class AplicativoSpool : public Aplicativo {
       bool conecta_bd();
       bool conecta_bd(const string &);
       int loop();
+      int executa();
+
+      bool estaBootando();
+      bool fazerFork();
+
 
 };
 

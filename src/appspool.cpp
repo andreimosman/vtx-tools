@@ -42,6 +42,10 @@ bool AplicativoSpool::conecta_bd() {
 	   strConn += "dbname=" + base + " ";
    }
 
+   this->doBoot = false;
+   this->doFork = true;
+   this->quiet = false;
+
 
 
    return(this->conecta_bd(strConn));
@@ -59,17 +63,96 @@ bool AplicativoSpool::conecta_bd(const string &strConn) {
 
 
 int AplicativoSpool::init(const string &arquivo,int argc,char** argv,char** env) {
-    cout << "INIT\n";
+
     Aplicativo::init(arquivo,argc,argv,env);
-
-
     this->conecta_bd();
 
-    //this->conn = new connection("dbname=virtex");
+    char ch;
 
-    //cout << "DB: " << this->cfg["pgsql"]["host"] << "\n";
+    this->quiet = false;
+
+	while((ch=getopt(argc,argv,"qBb")) != -1 ) {
+		switch(ch) {
+
+			case 'B':
+			case 'b':
+
+				this->doBoot = true;
+				this->doFork = false;
+				break;
+
+			case 'q':
+				this->quiet = true;
+				break;
+
+		}
+
+	}
+
+}
+
+// Executa (atualmente apenas no boot)
+int AplicativoSpool::executa() {
+
+	if( this->estaBootando() ) {
+
+		// Obtem as informações deste NAS
+		string sSQL;
+
+		sSQL  = "SELECT id_nas,nome,ip,secret,tipo_nas FROM cftb_nas WHERE ip='" + this->cfg["geral"]["srv_ip"] + "' AND tipo_nas='I'";
+		work *t = new work(*this->conn,"boot");
+
+		string id_nas;
+		string nome_nas;
+
+		result r = t->exec(sSQL);
+
+		for (result::size_type i = 0; i != r.size(); ++i) {
+			id_nas   = r[i]["id_nas"].c_str();
+			nome_nas = r[i]["nome"].c_str();
+		}
+
+		if( id_nas != "" ) {
+			// Seleciona os registros de banda larga para este NAS que esteja disponivel
+
+			sSQL  = "SELECT ";
+			sSQL += "   c.id_conta,c.username,cbl.rede,cbl.mac,upload_kbps,download_kbps ";
+			sSQL += "FROM ";
+			sSQL += "   cntb_conta c INNER JOIN cntb_conta_bandalarga cbl USING(username,dominio,tipo_conta) ";
+			sSQL += "WHERE ";
+			sSQL += "   cbl.id_nas = " + id_nas + " ";
+			sSQL += "   AND c.status = 'A' ";
+			sSQL += "   AND cbl.rede is not null ";
+
+			result r = t->exec(sSQL);
+
+			Atuador *a = new AtuadorBandalarga(this->cfg);
+
+			for (result::size_type i = 0; i != r.size(); ++i) {
+
+				string id_conta = r[i]["id_conta"].c_str();
+				string username = r[i]["username"].c_str();
+				string rede     = r[i]["rede"].c_str();
+				string mac      = r[i]["mac"].c_str();
+				string upload	= r[i]["upload_kbps"].c_str();
+				string download = r[i]["download_kbps"].c_str();
 
 
+				string parametros = rede + "," + mac + "," + upload + "," + download;
+
+				if( !this->quiet ) {
+					cout << "Liberando acesso: " << username + "|" + rede + "|" + mac << endl;
+				}
+
+				a->processa("a",id_conta,parametros);
+
+			}
+
+			delete a;
+
+		}
+
+	}
 
 }
 
@@ -82,11 +165,7 @@ int AplicativoSpool::loop() {
 
    while(1) {
 
-	   //
 	   work *t = new work(*this->conn,"spool"); // Inicia a transacao
-
-	   //cout << "RODANDO SQL: " << sSQL << "\n";
-
 	   result r = t->exec(sSQL);
 
 	   for (result::size_type i = 0; i != r.size(); ++i) {
@@ -100,16 +179,15 @@ int AplicativoSpool::loop() {
 		   string parametros = r[i]["parametros"].c_str();
 
 
+
+
 		   if( tipo=="BL" ){
-			   a = new AtuadorBandalarga();
+			   a = new AtuadorBandalarga(this->cfg);
 		   } else if(tipo=="E"){
 
 		   } else if(tipo=="H"){
 
 		   }
-
-		   cout << "RODANDO ATUADOR (1)\n";
-
 
 		   if( a == NULL ) {
 			   // Erro: ATUADOR DESCONHECIDO
@@ -117,19 +195,9 @@ int AplicativoSpool::loop() {
 		   } else {
 			   a->processa(op,id_conta,parametros);
 			   delete a;
+			   string uSQL = "UPDATE sptb_spool SET status='OK' WHERE id_spool = '" + id_spool + "' ";
+			   result u = t->exec(uSQL);
 		   }
-
-		   cout << "ATUADOR OK\n";
-
-
-
-		   //cout << "ID SPOOL..: " << id_spool << "\n";
-		   //cout << "TIPO......: " << tipo << "\n";
-		   //cout << "OP........: " << op << "\n";
-		   //cout << "ID CONTA..: " << id_conta << "\n";
-		   //cout << "PARAMETROS.: " << parametros << "\n";
-
-
 
 	   }
 
@@ -146,3 +214,14 @@ int AplicativoSpool::loop() {
    }
 
 }
+
+bool AplicativoSpool::estaBootando() {
+	return this->doBoot;
+}
+
+bool AplicativoSpool::fazerFork() {
+	return this->doFork;
+}
+
+
+
