@@ -7,6 +7,12 @@ INCLUDES=-I . -I /usr/local/include
 
 INSTALL_INC_PATH=/usr/include/mosman
 INSTALL_LIB_PATH=/usr/lib
+
+INSTALL_VIRTEX=/virtex
+INSTALL_VIRTEX_ETC=$(INSTALL_VIRTEX)/etc
+INSTALL_VIRTEX_BIN=$(INSTALL_VIRTEX)/bin
+
+
 LIBS=-L . -L /usr/local/lib -l mframework -lpqxx -lpq -lboost_regex
 
 TARGET=libmframework.a teste vtx-spool
@@ -41,9 +47,15 @@ apptest: teste
 
 
 
+install:
+	install -d $(INSTALL_VIRTEX_BIN)
+	install vtx-spool $(INSTALL_VIRTEX_BIN)
+	
+install-config:
+	install -d $(INSTALL_VIRTEX_ETC)
+	install virtex.ini $(INSTALL_VIRTEX_ETC)
 
-
-install: libmframework.a
+lib-install: libmframework.a
 	install -d $(INSTALL_INC_PATH)
 	install -d $(INSTALL_LIB_PATH)
 	install config.h $(INSTALL_INC_PATH)/
