@@ -1,7 +1,8 @@
 
 
 CXX=g++
-CXXFLAGS=-g3
+#CXXFLAGS=-g3 
+CXXFLAGS=-O3 -fno-enforce-eh-specs
 INCLUDES=-I . -I /usr/local/include 
 
 
@@ -15,13 +16,13 @@ INSTALL_VIRTEX_BIN=$(INSTALL_VIRTEX)/bin
 
 LIBS=-L . -L /usr/local/lib -l mframework -lpqxx -lpq -lboost_regex
 
-TARGET=libmframework.a teste vtx-spool vtx-radius vtx-pppoe
+TARGET=libmframework.a vtx-spool vtx-stats vtx-radius vtx-pppoe
+#teste 
 OBJLIB=aplicativo.o config.o rede.o so_freebsd.o sistema_operacional.o
-OBJETOS=apppppoe.o appradius.o appteste.o appspool.o atuador_bandalarga.o atuador.o
+OBJETOS=apppppoe.o appradius.o appstats.o appteste.o appspool.o atuador_bandalarga.o atuador_redesuporte.o atuador.o 
 
-
-
-vtx-spool_OBJ=appspool.o atuador_bandalarga.o
+vtx-spool_OBJ=appspool.o atuador_bandalarga.o atuador_redesuporte.o atuador.o
+vtx-stats_OBJ=appstats.o 
 vtx-radius_OBJ=appradius.o 
 vtx-pppoe_OBJ=apppppoe.o so_freebsd.o sistema_operacional.o
 
@@ -30,6 +31,7 @@ vtx-pppoe_OBJ=apppppoe.o so_freebsd.o sistema_operacional.o
 .o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
 .cpp:
+#	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $? $(LIBS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $< $(OBJETOS) $(LIBS)
 
 all:  $(TARGET) $(OBJETOS) $(OBJLIB)
@@ -40,6 +42,7 @@ libmframework.a: $(OBJLIB)
 teste: teste.cpp $(OBJETOS) libmframework.a
 
 vtx-spool: vtx-spool.cpp $(vtx-spool_OBJ)
+vtx-stats: vtx-stats.cpp $(vtx-stats_OBJ)
 vtx-radius: vtx-radius.cpp $(vtx-radius_OBJ)
 vtx-pppoe: vtx-pppoe.cpp $(vtx-pppoe_OBJ)
 

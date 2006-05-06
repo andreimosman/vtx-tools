@@ -1,9 +1,13 @@
 
+#include <exception>
+
 #include "appspool.h"
 #include "atuador.h"
 #include "atuador_bandalarga.h"
+#include "atuador_redesuporte.h"
 
 #include <pqxx/pqxx>
+
 
 using namespace std;
 using namespace MOSMAN;
@@ -13,59 +17,26 @@ AplicativoSpool::AplicativoSpool() {
 
 }
 
+int AplicativoSpool::conecta_bd() {
+	string host = this->cfg["pgsql"]["host"];
+	string user = this->cfg["pgsql"]["user"];
+	string pass = this->cfg["pgsql"]["pass"];
+	string base = this->cfg["pgsql"]["base"];
 
-
-
-bool AplicativoSpool::conecta_bd() {
-
-   // Monta a string de conexão.
-   string strConn;
-
-   string host = this->cfg["pgsql"]["host"];
-   string user = this->cfg["pgsql"]["user"];
-   string pass = this->cfg["pgsql"]["pass"];
-   string base = this->cfg["pgsql"]["base"];
-
-   if( host.size() ) {
-	   strConn += "host=" + host + " ";
-   }
-
-   if( user.size() ) {
-	   strConn += "user=" + user + " ";
-   }
-
-   if( pass.size() ) {
-	   strConn += "password=" + pass + " ";
-   }
-
-   if( base.size() ) {
-	   strConn += "dbname=" + base + " ";
-   }
-
-   this->doBoot = false;
-   this->doFork = true;
-   this->quiet = false;
-
-
-
-   return(this->conecta_bd(strConn));
-
+	return(Aplicativo::conecta_bd(host,user,pass,base));
 
 }
-
-// Conecta no banco de dados (postgresql)
-bool AplicativoSpool::conecta_bd(const string &strConn) {
-   this->conn = new connection(strConn);
-   return true;
-}
-
-
 
 
 int AplicativoSpool::init(const string &arquivo,int argc,char** argv,char** env) {
 
     Aplicativo::init(arquivo,argc,argv,env);
     this->conecta_bd();
+
+	this->doBoot = false;
+	this->doFork = true;
+	this->quiet = false;
+
 
     char ch;
 
@@ -112,8 +83,57 @@ int AplicativoSpool::executa() {
 			nome_nas = r[i]["nome"].c_str();
 		}
 
+
+
 		if( id_nas != "" ) {
-			// Seleciona os registros de banda larga para este NAS que esteja disponivel
+			result r;
+
+
+			///////////////////////////////////////////////////////////////////////////////
+			// Seleciona os ips de infra-estrutura e suporte para este NAS               //
+			///////////////////////////////////////////////////////////////////////////////
+
+			//cout << "SUPORTE MEGA POWER\n\n\n";
+
+
+			sSQL  = "SELECT ";
+			sSQL += "   r.rede,r.id_rede ";
+			sSQL += "FROM ";
+			sSQL += "   cftb_rede r INNER JOIN cftb_nas_rede nr USING( rede ) ";
+			sSQL += "WHERE ";
+			sSQL += "   nr.id_nas = '"+id_nas+"'";
+			sSQL += "   AND (tipo_rede = 'I' OR tipo_rede = 'S') ";
+
+			//cout << sSQL << endl;
+
+			r = t->exec(sSQL);
+
+			Atuador *ars = new AtuadorRedeSuporte(this->cfg);
+
+			for (result::size_type i = 0; i != r.size(); ++i) {
+
+				string id_rede = r[i]["id_rede"].c_str();
+				string rede     = r[i]["rede"].c_str();
+
+				//string parametros = rede + "," + mac + "," + upload + "," + download;
+
+				string parametros = rede;
+
+				if( !this->quiet ) {
+					cout << "REDE DE INFRAESTRUTURA: " << rede << endl;
+				}
+
+				ars->processa("a",id_rede,parametros);
+
+			}
+
+			delete ars;
+
+
+
+			///////////////////////////////////////////////////////////////////////////////
+			// Seleciona os registros de banda larga para este NAS que esteja disponivel //
+			///////////////////////////////////////////////////////////////////////////////
 
 			sSQL  = "SELECT ";
 			sSQL += "   c.id_conta,c.username,cbl.rede,cbl.mac,upload_kbps,download_kbps ";
@@ -124,9 +144,9 @@ int AplicativoSpool::executa() {
 			sSQL += "   AND c.status = 'A' ";
 			sSQL += "   AND cbl.rede is not null ";
 
-			result r = t->exec(sSQL);
+			r = t->exec(sSQL);
 
-			Atuador *a = new AtuadorBandalarga(this->cfg);
+			Atuador *abl = new AtuadorBandalarga(this->cfg);
 
 			for (result::size_type i = 0; i != r.size(); ++i) {
 
@@ -138,17 +158,17 @@ int AplicativoSpool::executa() {
 				string download = r[i]["download_kbps"].c_str();
 
 
-				string parametros = rede + "," + mac + "," + upload + "," + download;
+				string parametros = rede + "," + mac + "," + upload + "," + download + ","+username;
 
 				if( !this->quiet ) {
 					cout << "Liberando acesso: " << username + "|" + rede + "|" + mac << endl;
 				}
 
-				a->processa("a",id_conta,parametros);
+				abl->processa("a",id_conta,parametros);
 
 			}
 
-			delete a;
+			delete abl;
 
 		}
 

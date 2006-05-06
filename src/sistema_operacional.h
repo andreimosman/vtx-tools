@@ -44,7 +44,7 @@ namespace MOSMAN {
 
 
 			virtual bag& obtemEstatisticas();
-			
+
 			// Configura NAT
 			virtual int setNAT(string& iface);
 			virtual int unsetNAT(string& iface);

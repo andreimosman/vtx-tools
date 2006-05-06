@@ -38,32 +38,32 @@ bag& SOFreeBSD::obtemEstatisticas() {
 	/******************************************
 	 * Coleta os dados do IPFW                *
 	 ******************************************/
-	 
+
 	string ipfw = "/sbin/ipfw";
 	string comando = ipfw + " -b show";
-	
+
 	int pid = getpid();
 	char ipfwTMP[1024];
 	snprintf((char *)&ipfwTMP,1024,"/tmp/ipfw-stats-%d",pid);
-	
+
 	FILE *pd=popen(comando.c_str(),"r");
-	
+
 	char buffer[1024];
-	
-	
+
+
 	if( pd ) {
 	   ofstream tmp;
 	   tmp.open(ipfwTMP,ios::out);
-	   
-	   
+
+
 	   while(!feof(pd)) {
 	      fgets((char*)&buffer,1024,pd);
-	      
+
 	      tmp << buffer;
 	   }
-	   
+
 	   tmp.close();
-	   
+
 	}
 	pclose(pd);
 
@@ -134,18 +134,18 @@ bag& SOFreeBSD::obtemEstatisticas() {
 	}
 
 	in.close();
-	
+
 	unlink(ipfwTMP);
 
 	/******************************************
 	 * Exportar os dados no formato do VA     *
 	 ******************************************/
-	 
+
 	/**
 
 	char arquivo[1024];
 	snprintf((char *)&arquivo,1024,"/tmp/stats-%d",pid);
-	
+
 	ofstream arqstats;
 	arqstats.open(arquivo,ios::out);
 	for( bag::iterator r = stats.begin(); r != stats.end(); *r++ ) {
@@ -155,17 +155,15 @@ bag& SOFreeBSD::obtemEstatisticas() {
 
 	arqstats.close();
 	*/
-	
-	// Retorna o nome do arquivo temporario 
+
+	// Retorna o nome do arquivo temporario
 	// para processamento das estatisticas
 	//return(string(arquivo));
-	
-	
+
+
 	return(this->stats);
 
 }
-
-
 
 int SOFreeBSD::ifConfig(string& iface,string& ip,string &mascara) {
 	string comando = "/sbin/ifconfig " + iface + " inet alias " + ip + " netmask " + mascara;
@@ -214,7 +212,7 @@ int SOFreeBSD::adicionaRegraBW(int id,int baserule,int basepipe_in,int basepipe_
 	}
 
 	///////////////////////////////////////////
-	// ADICIONA OS PIPES                     //
+	// ADICIONA AS REGRAS                    //
 	///////////////////////////////////////////
 
 	// upload
@@ -223,21 +221,6 @@ int SOFreeBSD::adicionaRegraBW(int id,int baserule,int basepipe_in,int basepipe_
 	// download
 	comando = ipfw + " add " + rule + " pipe " + pipe_out + " ip from any to " + ip + " // "+username+"::down";
 	this->executa(comando);
-
-
-	///////////////////////////////////////////
-	// ADICIONA AS REGRAS                    //
-	///////////////////////////////////////////
-	//comando = ipfw + " add " + rule + " allow ip from " + ip + " to any in recv " + int_iface;
-	//this->executa(comando);
-	//comando = ipfw + " add " + rule + " allow ip from " + ip + " to any out xmit " + ext_iface;
-	//this->executa(comando);
-
-	//comando = ipfw + " add " + rule + " allow ip from any to " + ip + " in recv " + ext_iface;
-	//this->executa(comando);
-	//comando = ipfw + " add " + rule + " allow ip from any to " + ip + " out xmit " + int_iface;
-	//this->executa(comando);
-
 
 	///////////////////////////////////////////
 	// CONFIGURA OS PIPES                    //
@@ -258,7 +241,6 @@ int SOFreeBSD::adicionaRegraBW(int id,int baserule,int basepipe_in,int basepipe_
 	this->executa(comando);
 
 }
-
 
 int SOFreeBSD::deletaRegraBW(int id,int baserule, int basepipe_in,int basepipe_out) {
 
@@ -316,23 +298,22 @@ int SOFreeBSD::setNAT(string &iface){
 	string pfctl = "/sbin/pfctl";
 	string comando = pfctl + " -Nf- ";
 	FILE *p = popen(comando.c_str(),"w");
-	
-	string op; 
+
+	string op;
 	op = "no nat on " + iface + " from " + iface + " to any ";
 	fprintf(p,"%s\n",(const char *)op.c_str());
-	
+
 	op = "nat on " + iface + " from {10.0.0.0/8,172.16.0.0/12,192.168.0.0/16} to any -> (" + iface + ") ";
 	fprintf(p,"%s\n",(const char *)op.c_str());
-	
+
 	pclose(p);
 }
 
 int SOFreeBSD::unsetNAT(string &iface){
 	string pfctl = "/sbin/pfctl";
-	
+
 	// Flush
 	string comando = pfctl + " -F nat ";
 	this->executa(comando);
-   
 }
 

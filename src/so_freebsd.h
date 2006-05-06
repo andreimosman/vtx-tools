@@ -28,9 +28,9 @@ namespace MOSMAN {
 
 
 			bag& obtemEstatisticas();
-			
+
 			// NAT
-			
+
 			int setNAT(string &iface);
 			int unsetNAT(string &iface);
 

@@ -61,3 +61,36 @@ int Aplicativo::daemon() {
 
 }
 
+bool Aplicativo::conecta_bd(const string &host,const string& user, const string& pass, const string& base) {
+
+   // Monta a string de conexão.
+   string strConn;
+
+   if( host.size() ) {
+	   strConn += "host=" + host + " ";
+   }
+
+   if( user.size() ) {
+	   strConn += "user=" + user + " ";
+   }
+
+   if( pass.size() ) {
+	   strConn += "password=" + pass + " ";
+   }
+
+   if( base.size() ) {
+	   strConn += "dbname=" + base + " ";
+   }
+
+   return(this->conecta_bd(strConn));
+
+
+}
+
+// Conecta no banco de dados (postgresql)
+bool Aplicativo::conecta_bd(const string &strConn) {
+	bool conectado = false;
+	this->conn = new connection(strConn);
+
+	return true;
+}
