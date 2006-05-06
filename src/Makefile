@@ -8,20 +8,22 @@ INCLUDES=-I . -I /usr/local/include
 INSTALL_INC_PATH=/usr/include/mosman
 INSTALL_LIB_PATH=/usr/lib
 
-INSTALL_VIRTEX=/virtex
+INSTALL_VIRTEX=/mosman/virtex
 INSTALL_VIRTEX_ETC=$(INSTALL_VIRTEX)/etc
 INSTALL_VIRTEX_BIN=$(INSTALL_VIRTEX)/bin
 
 
 LIBS=-L . -L /usr/local/lib -l mframework -lpqxx -lpq -lboost_regex
 
-TARGET=libmframework.a teste vtx-spool
+TARGET=libmframework.a teste vtx-spool vtx-radius vtx-pppoe
 OBJLIB=aplicativo.o config.o rede.o so_freebsd.o sistema_operacional.o
-OBJETOS=appteste.o appspool.o atuador_bandalarga.o atuador.o
+OBJETOS=apppppoe.o appradius.o appteste.o appspool.o atuador_bandalarga.o atuador.o
 
 
 
 vtx-spool_OBJ=appspool.o atuador_bandalarga.o
+vtx-radius_OBJ=appradius.o 
+vtx-pppoe_OBJ=apppppoe.o so_freebsd.o sistema_operacional.o
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
@@ -38,6 +40,8 @@ libmframework.a: $(OBJLIB)
 teste: teste.cpp $(OBJETOS) libmframework.a
 
 vtx-spool: vtx-spool.cpp $(vtx-spool_OBJ)
+vtx-radius: vtx-radius.cpp $(vtx-radius_OBJ)
+vtx-pppoe: vtx-pppoe.cpp $(vtx-pppoe_OBJ)
 
 clean:
 	rm -f $(TARGET) $(OBJETOS) $(OBJLIB)

@@ -4,18 +4,28 @@
 
 
 #include <string>
+#include "general.h"
+#include "mif.h"
 
 
 
 using namespace std;
 
+#define SO_FW_IP_SUP_BASERULE	2000
+
 #define SO_FW_IP_BASERULE		10000
 #define SO_FW_IP_BASEPIPE_IN 	18000
 #define SO_FW_IP_BASEPIPE_OUT	26000
 
+
+
+
+
 namespace MOSMAN {
 
 	class SistemaOperacional {
+		protected:
+			bag stats;
 
 		public:
 			SistemaOperacional();
@@ -24,8 +34,20 @@ namespace MOSMAN {
 
 			// id (id_conta), baserule (para calculo), interface interna, interface externa, ip, mac
 			// upload (em kbps), download (em kbps)
-			virtual int adicionaRegraBW(int id,int baserule,int basepipe_in,int basepipe_out,string& int_iface,string& ext_iface,string& ip,string& mac,int upload_kbps,int download_kbps);
+			// Regras de Cliente
+			virtual int adicionaRegraBW(int id,int baserule,int basepipe_in,int basepipe_out,string& int_iface,string& ext_iface,string& ip,string& mac,int upload_kbps,int download_kbps,string& username);
+			virtual int deletaRegraBW(int id,int baserule, int basepipe_int,int basepipe_out);
 
+			// Regras de suporte e infra-estrutura
+			virtual int adicionaRegraSP(int id,int baserule,string& rede,string &ext_iface);
+			virtual int deletaRegraSP(int id,int baserule);
+
+
+			virtual bag& obtemEstatisticas();
+			
+			// Configura NAT
+			virtual int setNAT(string& iface);
+			virtual int unsetNAT(string& iface);
 
 	};
 
