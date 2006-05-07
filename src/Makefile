@@ -14,7 +14,7 @@ INSTALL_VIRTEX_ETC=$(INSTALL_VIRTEX)/etc
 INSTALL_VIRTEX_BIN=$(INSTALL_VIRTEX)/bin
 
 
-LIBS=-L . -L /usr/local/lib -l mframework -lpqxx -lpq -lboost_regex
+LIBS=-L . -L /usr/local/lib -l mframework -lpqxx -lpq -lboost_regex 
 
 TARGET=libmframework.a vtx-spool vtx-stats vtx-radius vtx-pppoe
 #teste 
