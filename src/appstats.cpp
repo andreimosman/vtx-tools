@@ -85,7 +85,7 @@ int AplicativoStats::executa() {
 
    // Acessa a funcao de estatisticas
 
-   soImpl->geraEstatisticas();
+   //soImpl->geraEstatisticas();
 
 
 
