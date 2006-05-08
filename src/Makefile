@@ -1,8 +1,8 @@
 
 
 CXX=g++
-#CXXFLAGS=-g3 
-CXXFLAGS=-O3 -fno-enforce-eh-specs
+CXXFLAGS=-g3 
+#CXXFLAGS=-O3 -fno-enforce-eh-specs
 INCLUDES=-I . -I /usr/local/include 
 
 
@@ -31,8 +31,8 @@ vtx-pppoe_OBJ=apppppoe.o so_freebsd.o sistema_operacional.o
 .o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $<
 .cpp:
-#	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $? $(LIBS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $< $(OBJETOS) $(LIBS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $? $(LIBS)
+#	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $< $(OBJETOS) $(LIBS)
 
 all:  $(TARGET) $(OBJETOS) $(OBJLIB)
 
@@ -57,6 +57,7 @@ apptest: teste
 install:
 	install -d $(INSTALL_VIRTEX_BIN)
 	install vtx-spool $(INSTALL_VIRTEX_BIN)
+	install vtx-radius $(INSTALL_VIRTEX_BIN)
 	
 install-config:
 	install -d $(INSTALL_VIRTEX_ETC)
