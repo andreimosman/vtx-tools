@@ -16,15 +16,16 @@ INSTALL_VIRTEX_BIN=$(INSTALL_VIRTEX)/bin
 
 LIBS=-L . -L /usr/local/lib -l mframework -lpqxx -lpq -lboost_regex 
 
-TARGET=libmframework.a vtx-spool vtx-stats vtx-radius vtx-pppoe
+TARGET=libmframework.a vtx-spool vtx-stats vtx-radius vtx-pppoe vtx-network
 #teste 
 OBJLIB=aplicativo.o config.o rede.o so_freebsd.o sistema_operacional.o
-OBJETOS=apppppoe.o appradius.o appstats.o appteste.o appspool.o atuador_bandalarga.o atuador_redesuporte.o atuador.o 
+OBJETOS=appnetwork.o apppppoe.o appradius.o appstats.o appteste.o appspool.o atuador_bandalarga.o atuador_redesuporte.o atuador.o 
 
 vtx-spool_OBJ=appspool.o atuador_bandalarga.o atuador_redesuporte.o atuador.o
 vtx-stats_OBJ=appstats.o 
 vtx-radius_OBJ=appradius.o 
 vtx-pppoe_OBJ=apppppoe.o so_freebsd.o sistema_operacional.o
+vtx-network_OBJ=appnetwork.o so_freebsd.o sistema_operacional.o
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
@@ -45,6 +46,7 @@ vtx-spool: vtx-spool.cpp $(vtx-spool_OBJ)
 vtx-stats: vtx-stats.cpp $(vtx-stats_OBJ)
 vtx-radius: vtx-radius.cpp $(vtx-radius_OBJ)
 vtx-pppoe: vtx-pppoe.cpp $(vtx-pppoe_OBJ)
+vtx-network: vtx-network.cpp $(vtx-network_OBJ)
 
 clean:
 	rm -f $(TARGET) $(OBJETOS) $(OBJLIB)
@@ -62,6 +64,9 @@ install:
 install-config:
 	install -d $(INSTALL_VIRTEX_ETC)
 	install virtex.ini $(INSTALL_VIRTEX_ETC)
+	install network.ini $(INSTALL_VIRTEX_ETC)
+	install pppoe.ini $(INSTALL_VIRTEX_ETC)
+	install tcpip.ini $(INSTALL_VIRTEX_ETC)
 
 lib-install: libmframework.a
 	install -d $(INSTALL_INC_PATH)

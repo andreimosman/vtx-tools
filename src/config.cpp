@@ -179,6 +179,14 @@ Sessao& Config::operator[](const std::string& chave) {
 	return this->obtem(chave);
 }
 
+Config::iterator Config::begin() {
+	return this->sessoes.begin();
+}
+
+Config::iterator Config::end() {
+	return this->sessoes.end();
+}
+
 
 
 
@@ -205,8 +213,6 @@ string& Sessao::obtem(const std::string& chave) {
 string& Sessao::operator[](const std::string& chave) {
 	return(this->obtem(chave));
 }
-
-
 
 
 

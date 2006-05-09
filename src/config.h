@@ -49,6 +49,7 @@ namespace MOSMAN {
 
 	   public:
 	      typedef map<string,Sessao> mapaSessoes;
+		  typedef mapaSessoes::iterator	iterator;
 
 	   protected:
 	      mapaSessoes sessoes;
@@ -62,6 +63,8 @@ namespace MOSMAN {
 	      bool parseIni(const string&);
 	      Sessao& obtem(const std::string&);
 	      Sessao& operator[](const std::string& );
+	      iterator begin();
+	      iterator end();
 
 
    };
