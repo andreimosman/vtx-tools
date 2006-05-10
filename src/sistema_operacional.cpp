@@ -60,3 +60,7 @@ int SistemaOperacional::routeDelete(string rede) {
 int SistemaOperacional::installDir(string target) {
 
 }
+
+int SistemaOperacional::executa(string& comando){
+
+}

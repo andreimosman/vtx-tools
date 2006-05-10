@@ -11,7 +11,6 @@ namespace MOSMAN {
 	class SOFreeBSD : public SistemaOperacional {
 		private:
 			int obtemNumSlotsIdeal(int banda);
-			int executa(string& comando);
 
 		public:
 			SOFreeBSD();
@@ -38,6 +37,9 @@ namespace MOSMAN {
 
 			// Install
 			int installDir(string target);
+
+			//Executa comandos
+			int executa(string& comando);
 
 
 	};

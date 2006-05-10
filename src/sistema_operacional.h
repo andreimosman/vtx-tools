@@ -56,6 +56,9 @@ namespace MOSMAN {
 			// Install
 			virtual int installDir(string target);
 
+			//Executa
+			virtual int executa(string& comando);
+
 
 	};
 
