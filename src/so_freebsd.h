@@ -26,13 +26,18 @@ namespace MOSMAN {
 			int adicionaRegraSP(int id,int baserule,string& rede,string& ext_iface);
 			int deletaRegraSP(int id,int baserule);
 
-
 			bag& obtemEstatisticas();
 
 			// NAT
-
 			int setNAT(string &iface);
 			int unsetNAT(string &iface);
+
+			// Rotas
+			int routeAdd(string rede,string destino);
+			int routeDelete(string rede);
+
+			// Install
+			int installDir(string target);
 
 
 	};

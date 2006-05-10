@@ -48,3 +48,15 @@ int SistemaOperacional::setNAT(string& iface) {
 int SistemaOperacional::unsetNAT(string& iface) {
 
 }
+
+int SistemaOperacional::routeAdd(string rede,string destino) {
+
+}
+
+int SistemaOperacional::routeDelete(string rede) {
+
+}
+
+int SistemaOperacional::installDir(string target) {
+
+}

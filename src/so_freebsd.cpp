@@ -27,7 +27,8 @@ SOFreeBSD::SOFreeBSD() {
 
 int SOFreeBSD::executa(string& comando) {
 	cout << comando << endl;
-	//system(comando.c_str());
+	//return(system(comando.c_str()));
+	return(0);
 }
 
 bag& SOFreeBSD::obtemEstatisticas() {
@@ -314,6 +315,31 @@ int SOFreeBSD::unsetNAT(string &iface){
 
 	// Flush
 	string comando = pfctl + " -F nat ";
-	this->executa(comando);
+	return(this->executa(comando));
+}
+
+int SOFreeBSD::routeAdd(string rede,string destino) {
+	string route = "/sbin/route";
+
+	string comando = route + " add -net " + rede + " " + destino;
+	return(this->executa(comando));
+
+}
+
+int SOFreeBSD::routeDelete(string rede) {
+	string route = "/sbin/route";
+
+	string comando = route + " delete -net " + rede + " 2>&1 > /dev/null ";
+	return(this->executa(comando));
+
+}
+
+int SOFreeBSD::installDir(string target) {
+	string install = "/usr/bin/install";
+
+	string comando = install + " -d " + target;
+	return(this->executa(comando));
+
+
 }
 

@@ -49,6 +49,14 @@ namespace MOSMAN {
 			virtual int setNAT(string& iface);
 			virtual int unsetNAT(string& iface);
 
+			// Rotas
+			virtual int routeAdd(string rede,string destino);
+			virtual int routeDelete(string rede);
+
+			// Install
+			virtual int installDir(string target);
+
+
 	};
 
 
