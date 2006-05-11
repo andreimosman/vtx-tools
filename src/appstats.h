@@ -1,3 +1,4 @@
+
 #ifndef _APPSTATS_H
 #define _APPSTATS_H
 
@@ -13,9 +14,9 @@ class AplicativoStats : public Aplicativo {
 
    protected:
 
-      //bool doBoot;
-      //bool doFork;
-      //bool quiet;
+      bool doBoot;
+      bool doFork;
+      bool quiet;
 
    public:
       AplicativoStats::AplicativoStats();
@@ -23,8 +24,8 @@ class AplicativoStats : public Aplicativo {
       int loop();
       int executa();
 
-      //bool estaBootando();
-      //bool fazerFork();
+      bool estaBootando();
+      bool fazerFork();
 
       int conecta_bd();	// Conecta ao banco usando os parametros do arquivo de configuração
 

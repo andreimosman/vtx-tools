@@ -18,7 +18,7 @@ int main(int argc,char **argv,char **env) {
 	//if( app.fazerFork() ) {
 	//	app.daemon();
 	//} else {
-		app.executa();
+		exit(app.executa());
 	//}
 
 
