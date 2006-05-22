@@ -1,6 +1,8 @@
 
 #include <exception>
 
+#include "virtex.h"
+
 #include "appspool.h"
 #include "atuador.h"
 #include "atuador_bandalarga.h"
@@ -32,6 +34,29 @@ int AplicativoSpool::init(const string &arquivo,int argc,char** argv,char** env)
 
     Aplicativo::init(arquivo,argc,argv,env);
     this->conecta_bd();
+
+    // Configurações tcp/ip
+    this->tcfg.parseIni(TCPIP_INI);
+
+
+    for(Config::iterator i = tcfg.begin(); i != tcfg.end(); ++i ) {
+		string interface = i->first;
+
+		string id_nas = tcfg[interface]["id_nas"];
+		string enabled = tcfg[interface]["enabled"];
+
+		if( enabled == "1" || enabled == "yes" ) {
+			this->nas_disponivel[id_nas] = interface;
+		}
+
+		//cout << "Interface...: " << interface << endl;
+		//cout << "ID_NAS......: " << id_nas << endl;
+		//cout << "ENABLED.....: " << enabled << endl;
+
+	}
+
+
+
 
 	this->doBoot = false;
 	this->doFork = true;

@@ -1,6 +1,8 @@
 #include "appnetwork.h"
 
 #include "virtex.h"
+#include "sistema_operacional.h"
+#include "so_freebsd.h"
 
 #include <pqxx/pqxx>
 
@@ -94,59 +96,49 @@ int AplicativoNetwork::executa() {
 	// Script de inicializacao.
 	if( this->bRC ) {
 
-		// Varre o RC
+		// Script de inicialização de rede
+		SistemaOperacional *so = new SOFreeBSD();
 
 		for( Config::iterator i = ncfg.begin(); i != ncfg.end(); i++ ) {
 			// cout << "ACHOU ALGO: " << i->first << endl;
 
-			string sessao = i->first;
+			string interface = i->first;
 
-			//cout << "SESSAO: " << sessao << endl;
+			string status  = ncfg[interface]["status"];
+			string type    = ncfg[interface]["type"];
+			string ipaddr  = ncfg[interface]["ipaddr"];
+			string netmask = ncfg[interface]["netmask"];
+			string gateway = ncfg[interface]["gateway"];
+			string nat     = ncfg[interface]["nat"];
 
-			string status  = ncfg[sessao]["status"];
-			string type    = ncfg[sessao]["type"];
-			string ipaddr  = ncfg[sessao]["ipaddr"];
-			string netmask = ncfg[sessao]["netmask"];
-			string gateway = ncfg[sessao]["gateway"];
-			string nat     = ncfg[sessao]["nat"];
+			if( type == "external" || type == "general" ) {
+				// Configuração de interface externa
 
+				if( ipaddr == "" || netmask == "" ) {
+					continue;
+				}
 
-			cout << "Interface.: " << sessao << endl;
-			cout << "Status....: " << status << endl;
-			cout << "Type......: " << type << endl;
-			cout << "IPADDR....: " << ipaddr << endl;
-			cout << "NETMASK...: " << netmask << endl;
-			cout << "GATEWAY...: " << gateway << endl;
-			cout << "NAT.......: " << nat << endl;
-			cout << "----------------------------------" << endl;
+				// Configura o ip
+				so->ifConfig(interface,ipaddr,netmask);
 
-			//cout << "" << << endl;
-			//cout << "" << << endl;
+				if( gateway != "" ) {
+					// Configura a rota padrao
+					so->routeDelete(string("default"));
+					so->routeAdd(string("default"),gateway);
+				}
 
+				if( nat != "" ) {
+					// TODO: Configura o NAT
 
+				}
 
-
-
-
-
-
-
-
+			}
 
 
 		}
 
 
-
-
-
-
-
-
 	}
-
-
-
 
 }
 

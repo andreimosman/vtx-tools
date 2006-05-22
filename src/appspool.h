@@ -2,6 +2,7 @@
 #define _APPSPOOL_H
 
 #include <aplicativo.h>
+#include "general.h"
 
 using namespace std;
 using namespace MOSMAN;
@@ -14,6 +15,10 @@ class AplicativoSpool : public Aplicativo {
       bool doBoot;
       bool doFork;
       bool quiet;
+
+      Config tcfg;
+
+      reg nas_disponivel;
 
    public:
       AplicativoSpool::AplicativoSpool();
